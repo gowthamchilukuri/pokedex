@@ -1,0 +1,2 @@
+# pokedex
+Translated_pokedex
