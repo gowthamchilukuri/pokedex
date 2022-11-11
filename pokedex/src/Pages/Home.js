@@ -2,16 +2,17 @@ import React, { useEffect, useState } from 'react'
 import PokeCard from '../Components/PokeCard'
 import axios from  'axios'
 import Header from '../Components/Header'
-import InfiniteScroll from "react-infinite-scroll-component";
-import { Container, Row, Col, Spinner } from "react-bootstrap";
 
 const Home = () => {
 
   const [pokemonArr, setPokemonArr] = useState()
   const [pokemonArr2, setPokemonArr2] = useState()
-const [searchPokemon, setsearchPokemon] = useState()
-const[capturedPokemon, setCapturedPokemon] = useState()
-const[capturedPokemonToggle, setCapturedPokemonToggle] = useState(false)
+  const [searchPokemon, setsearchPokemon] = useState()
+  const[capturedPokemon, setCapturedPokemon] = useState([])
+
+useEffect(() => {
+  setCapturedPokemon(capturedPokemon)
+}, [capturedPokemon])
 
 
   useEffect(() => {
@@ -20,73 +21,76 @@ const[capturedPokemonToggle, setCapturedPokemonToggle] = useState(false)
   
   const handleGetAllPokemon = () => {
     axios.get('https://pokeapi.co/api/v2/pokemon/?limit=100').then(res=>{
-    console.log('res',res)
-    setPokemonArr(res?.data?.results)
-    setPokemonArr2(res?.data?.results)
-    setCapturedPokemon(res?.data?.results.slice(0,15))
+    const newArr = []
+   res?.data?.results?.map((i,index)=>{
+    
+      let newPokemon = {
+        'name' : i?.name,
+        'url': i?.url,
+        'index':index+1
+      }
+      newArr.push(newPokemon)
+    })
+    
+    setPokemonArr(newArr)
+    setPokemonArr2(newArr)
+
       })
   }
 
   useEffect(() => {
     if(searchPokemon){
       let data = [...pokemonArr2]
-      //console.log("e?.target?.value--------------true")
     const filteredPokemonArr = data?.filter(f=>{return f?.name.includes(searchPokemon)})
-   // console.log("filteredPokemonArr",filteredPokemonArr)
     setPokemonArr(filteredPokemonArr)
   }else {
-   // console.log("e?.target?.value--------------false")
     setPokemonArr(pokemonArr2)
   }
   }, [searchPokemon]) 
   
 
-  const hanldeSetCapturePokenArr=(toggle) => {
-    if(toggle){
-   console.log("e?.target?.value--------------true",capturedPokemon)
+  const hanldeSetCapturePokenArr=(method) => {
+    if(method  === 'captured'){
 
       setPokemonArr(capturedPokemon)
-    }else{
+    }else if(method === 'uncaptured'){
+      let uncapturedPokemon = []
+      pokemonArr2.map((p,index)=>{
+       let findcapPokemon  =capturedPokemon.find(f=>{return(f.index=== p.index)})
+       if(!findcapPokemon){
+        uncapturedPokemon.push(p)
+       }
+      })
+      setPokemonArr(uncapturedPokemon)
+    }
+
+    
+    else{
         setPokemonArr(pokemonArr2)
       }
   }
   
   const handleSearchPokemon = (e)=>{
- //   console.log(e.target.value)
  setsearchPokemon(e.target.value)
   }
-  const handleGetCapturePokemon = (e)=>{
-      console.log(e.target.checked)
-    setCapturedPokemonToggle(!e.target.checked)
-    hanldeSetCapturePokenArr(e.target.checked)
-     }
-
   return (
 
-    
-    <div style={{display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center'}}>
+    <div style={{display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center' ,fontFamily: 'Josefin Sans'}}>
      <Header/>
+    <input className='text-box col-7 ' style={{borderRadius:10}} type={"text"} onChange={handleSearchPokemon} placeholder={'Search Pokemon'}/>
+    <div className="btn-group btn-group-sm p-4">
+        <button type="button"  onClick={()=>{hanldeSetCapturePokenArr('captured')}}  className="btn btn-secondary">captured</button>
+        <button type="button"  onClick={()=>{hanldeSetCapturePokenArr('uncaptured')}} className="btn btn-secondary">Uncaptured</button>
+        <button type="button"  onClick={()=>{hanldeSetCapturePokenArr('All')}}  className="btn btn-secondary">All Pokemon</button>
+    </div>
 
-      <input className='text-box' type={"text"}  onChange = {handleSearchPokemon}/>
-      <input  type={'checkbox'}  onChange = {handleGetCapturePokemon}/>
-      
-
-        <div style={{padding:100}}>
-            <Row>
-            {pokemonArr?.map((item,index)=>{
-                return (
-                  <Col key={item.id} xs={12} sm={6} lg={3}>
-                    <PokeCard name = {item?.name} id={index+1}url = {item?.url}/>
-                  </Col>
-                );
-              })}
-            </Row>
-          </div>
-       
-
-        
-    
-
+      <div style={{display:'flex',flexWrap:'wrap',gap:25,justifyContent:'center', padding:80}}>
+          {pokemonArr?.map((item,index)=>{
+          return (
+            <PokeCard key={index} pokemon = {item} setCapturedPokemon = {setCapturedPokemon}  capturedPokemon = {capturedPokemon}/>
+              );
+          })}
+     </div>
     </div>
   )
 }
