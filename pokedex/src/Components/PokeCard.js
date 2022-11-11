@@ -53,10 +53,10 @@ setCaptured(prevCaptured => !prevCaptured)
   </div>
         </div>
         <h4 className='text-uppercase'>{pokemon?.name}</h4>
-        <div className="w-100  d-flex justify-content-between">
+        <div className="w-100  d-flex " style={{justifyContent:'space-between'}}>
         {types?.map((item, index) => {
           return (
-            <div
+            <div className='px-2'style={{backgroundColor:item?.type.name===('flying'||'grass')?'#00ff55':'#ffff4d',borderRadius:10}}
               key={index}
             >
               <p className="mb-0 text-uppercase">{item?.type?.name}</p>
