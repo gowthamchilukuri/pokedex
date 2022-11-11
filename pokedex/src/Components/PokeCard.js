@@ -55,8 +55,47 @@ setCaptured(prevCaptured => !prevCaptured)
         <h4 className='text-uppercase'>{pokemon?.name}</h4>
         <div className="w-100  d-flex " style={{justifyContent:'space-between'}}>
         {types?.map((item, index) => {
+          const type=()=>{
+            if (item.type.name==="grass"){
+              return("green")
+          }
+          else if(item.type.name==="water"){
+              return("blue")
+          }
+          else if(item.type.name==="poison"){
+              return("violet")
+          }
+          else if(item.type.name==="fire"){
+              return("orange")
+          }
+          else if(item.type.name==="flying"){
+              return("skyblue")
+          }
+          else if(item.type.name==="bug"){
+              return("red")
+          }
+          else if(item.type.name==="normal"){
+              return("yellow")
+          }
+          else if(item.type.name==="electric"){
+              return("silver")
+          }
+          else if(item.type.name==="ground"){
+              return("brown")
+          }
+          else if(item.type.name==="fairy"){
+              return("pink")
+          }
+          else if(item.type.name==="fighting"){
+              return("cyan")
+          }
+          else{
+              return("black")
+          }
+          }
+
           return (
-            <div className='px-2'style={{backgroundColor:item?.type.name===('flying'||'grass')?'#00ff55':'#ffff4d',borderRadius:10}}
+            <div className='px-2'style={{backgroundColor:`${type()}`,borderRadius:10}}
               key={index}
             >
               <p className="mb-0 text-uppercase">{item?.type?.name}</p>
